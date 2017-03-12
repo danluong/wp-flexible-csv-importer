@@ -5,7 +5,7 @@ cd /var/www/html
 
 echo 'awaiting mysql to be reachable'
 
-while ! mysqladmin ping -h devmysql --silent; do
+while ! mysqladmin ping -h wpcsvdevsql --silent; do
     printf "."
     sleep 1
 done
@@ -19,7 +19,7 @@ wp --allow-root core install --url='172.17.0.3' --title='wp plugindev' --admin_u
 . /sync_sources.sh
 
 # activate wp static output plugin
-wp --allow-root plugin activate wordpress-static-html-output
+wp --allow-root plugin activate wp-flexible-csv-importer
 
 # OPTIONAL: install latest static plugin from WP plugins site vs local src
 #wp --allow-root plugin install static-html-output-plugin --activate
