@@ -7,7 +7,7 @@ class WPFlexibleCSVImporter {
 	public function renderMainScreen()
 	{
         ?>
-		<form enctype="multipart/form-data" id="import-upload-form" method="post" class="wp-upload-form" action="<?php echo esc_url( add_query_arg( array( 'step' => 2 ), $this->get_action() ) ); ?>">
+		<form enctype="multipart/form-data" id="import-upload-form" method="post" class="wp-upload-form" action="<?php echo esc_url( add_query_arg( array( 'upload' => 1 ), $this->getAction() ) ); ?>">
 			<p>
 				<label for="upload"><?php _e( 'Choose a .csv file from your computer.', 'wp-flexible-csv-importer' ); ?></label><br />(<?php printf( __('Maximum size: %s' ), $size ); ?>)
 			</p>
@@ -20,5 +20,28 @@ class WPFlexibleCSVImporter {
 			<?php submit_button( __('Upload file and import'), 'wp-flexible-csv-importer' ); ?>
 		</form>
         <?php
+
+        // perform upload
+		if ( isset( $_GET['upload'] ) ) {
+            $this->doUpload();
+        }
+
 	}
+
+    private function getAction() {
+        return $this->action;
+    }
+
+    private function doUpload() { 
+		$file = wp_import_handle_upload();
+
+		if ( isset( $file['error'] ) ) {
+			echo print_r($file['error']);
+		} else if ( ! file_exists( $file['file'] ) ) {
+			echo print_r('couldn\'t find export file - permissions?');
+		}
+
+		$csv_file = get_attached_file( $file['id'] );
+        echo file_get_contents( $csv_file );
+    }
 }
