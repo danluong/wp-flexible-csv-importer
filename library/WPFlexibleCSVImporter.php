@@ -1,7 +1,5 @@
 <?php
 
-use \WP_Error;
-
 class WPFlexibleCSVImporter {
 
 	private $action = 'admin.php?import=wp-flexible-csv-importer';
@@ -23,5 +21,4 @@ class WPFlexibleCSVImporter {
 		</form>
         <?php
 	}
-
 }

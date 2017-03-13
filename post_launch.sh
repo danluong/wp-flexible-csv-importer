@@ -14,7 +14,7 @@ done
 sleep 5
 
 # install default
-wp --allow-root core install --url='172.17.0.3' --title='wp plugindev' --admin_user=admin --admin_password=admin --admin_email=blah@blah.com --skip-email
+wp --allow-root core install --url='172.17.0.5' --title='wp plugindev' --admin_user=admin --admin_password=admin --admin_email=blah@blah.com --skip-email
 
 . /sync_sources.sh
 
