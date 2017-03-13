@@ -4,44 +4,89 @@ class WPFlexibleCSVImporter {
 
 	private $action = 'admin.php?import=wp-flexible-csv-importer';
 
-	public function renderMainScreen()
+	public function router()
 	{
-        ?>
-		<form enctype="multipart/form-data" id="import-upload-form" method="post" class="wp-upload-form" action="<?php echo esc_url( add_query_arg( array( 'upload' => 1 ), $this->getAction() ) ); ?>">
-			<p>
-				<label for="upload"><?php _e( 'Choose a .csv file from your computer.', 'wp-flexible-csv-importer' ); ?></label><br />(<?php printf( __('Maximum size: %s' ), $size ); ?>)
-			</p>
-			<p>
-				<input type="file" id="upload" name="import" size="25" />
-				<input type="hidden" name="action" value="save" />
-				<input type="hidden" name="max_file_size" value="<?php echo $bytes; ?>" />
-				<?php wp_nonce_field( 'acsv-import-upload' ); ?>
-			</p>
-			<?php submit_button( __('Upload file and import'), 'wp-flexible-csv-importer' ); ?>
-		</form>
-        <?php
+        $this->showHeader();
 
         // perform upload
 		if ( isset( $_GET['upload'] ) ) {
             $this->doUpload();
+        } else {
+            $this->showMainPage();
         }
-
 	}
 
     private function getAction() {
         return $this->action;
     }
 
-    private function doUpload() { 
-		$file = wp_import_handle_upload();
+    private function showMainPage() {
+        ?>
 
-		if ( isset( $file['error'] ) ) {
-			echo print_r($file['error']);
-		} else if ( ! file_exists( $file['file'] ) ) {
-			echo print_r('couldn\'t find export file - permissions?');
-		}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.4/papaparse.min.js"></script>
+        <script>
+          var data;
+          var select = '<select>';
+          select += '<option value="custom">Custom field</option>';
+          select += '<option value="title">Title</option>';
+          select += '<option value="description">Description</option>';
+          select += '</select>';
+         
+          function handleFileSelect(evt) {
+            var file = evt.target.files[0];
+ 
+            Papa.parse(file, {
+              header: true,
+              dynamicTyping: true,
+              complete: function(results) {
+                data = results;
+                console.log(data);
+                showFieldMappings();
+              }
+            });
+          }
 
-		$csv_file = get_attached_file( $file['id'] );
-        echo file_get_contents( $csv_file );
+          function showFieldMappings() {
+            jQuery('#csv-file').hide();
+            jQuery('#fieldMappings').show();
+
+            jQuery.each(data.meta.fields, function(index, value) {
+                console.log(value);
+                el = '<tr><td>' + value + '</td><td>' + select + '</td><td><input /></td>'; 
+                jQuery('#fieldMappingTable tbody').append(el)
+            });
+          }
+         
+          jQuery(document).ready(function(){
+            jQuery("#csv-file").change(handleFileSelect);
+          });
+        </script>
+        <input type="file" id="csv-file" name="files"/>
+        
+        <div id ="fieldMappings" style="display:none;">
+            <h2 id="fieldMappingsTitle">Field mappings</h2>
+
+            <table id="fieldMappingTable">
+                <thead>
+                    <tr>
+                        <th>CSV field</th>
+                        <th>WP Post field</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <button class="button-primary">Import</button>
+        </div>
+
+        <?php
+    }
+
+    private function showHeader() {
+        ?>
+        <h1>WP Flexible CSV Importer</h1>
+        <?php
     }
 }

@@ -31,7 +31,7 @@ if ( is_admin() && defined('WP_LOAD_IMPORTERS') ) {
 		__('Import posts, and custom fields from any csv file.', 'wp-flexible-csv-importer'),
 		array (
 			$wpFlexibleCSVImporter,
-			'renderMainScreen'
+			'router'
 		)
 	);
 
