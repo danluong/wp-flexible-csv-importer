@@ -25,41 +25,70 @@ class WPFlexibleCSVImporter {
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.4/papaparse.min.js"></script>
         <script>
-          var data;
-          var select = '<select>';
-          select += '<option value="custom">Custom field</option>';
-          select += '<option value="title">Title</option>';
-          select += '<option value="description">Description</option>';
-          select += '</select>';
-         
-          function handleFileSelect(evt) {
-            var file = evt.target.files[0];
+        var data;
+        var select = '<select class="fieldType">';
+        select += '<option value="custom">Custom field</option>';
+        select += '<option value="title">Title</option>';
+        select += '<option value="content">Content</option>';
+        select += '<option value="image">Image</option>';
+        select += '</select>';
+
+        function showTitleFieldOptions(target) {
+            // remove all field options
+            jQuery(target).parent().html(''); 
+
+            // add title field options
+        }
  
-            Papa.parse(file, {
-              header: true,
-              dynamicTyping: true,
-              complete: function(results) {
-                data = results;
-                console.log(data);
-                showFieldMappings();
-              }
-            });
-          }
+        function handleFieldChange(target) {
+            targetField = jQuery(target);
 
-          function showFieldMappings() {
-            jQuery('#csv-file').hide();
-            jQuery('#fieldMappings').show();
+            // get chosen field type
+            chosenFieldType = targetField.find(":selected").val();
+            console.log(chosenFieldType);
 
-            jQuery.each(data.meta.fields, function(index, value) {
-                console.log(value);
-                el = '<tr><td>' + value + '</td><td>' + select + '</td><td><input /></td>'; 
-                jQuery('#fieldMappingTable tbody').append(el)
-            });
-          }
+            // handle a "title" field
+
+            // handle a "custom" field
+
+            // handle a "content" field
+
+            // handle an "image" field
          
-          jQuery(document).ready(function(){
-            jQuery("#csv-file").change(handleFileSelect);
+        }
+
+        function handleFileSelect(evt) {
+          var file = evt.target.files[0];
+
+          Papa.parse(file, {
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+              data = results;
+              console.log(data);
+              showFieldMappings();
+            }
           });
+        }
+
+        function showFieldMappings() {
+          jQuery('#csv-file').hide();
+          jQuery('#fieldMappings').show();
+
+          jQuery.each(data.meta.fields, function(index, value) {
+              console.log(value);
+              el = '<tr><td>' + value + '</td><td>' + select + '</td><td class=".fieldOptions"><input /></td>';
+              jQuery('#fieldMappingTable tbody').append(el)
+          });
+        }
+
+        jQuery(document).ready(function(){
+          jQuery("#csv-file").change(handleFileSelect);
+
+            jQuery(document).on('change','.fieldType',function(event){
+              handleFieldChange(event.target);
+            });
+        });
         </script>
         <input type="file" id="csv-file" name="files"/>
         
