@@ -58,9 +58,7 @@ class WPFlexibleCSVImporter {
             // remove all field options
             jQuery(target).closest('td').next('td').html('');
         }
-
-        function showTitleFieldOptions(target) {
-            // clone empty title field options set
+function showTitleFieldOptions(target) {
             optionsBlock = jQuery('#titleFieldOptionsBlock').clone();
 
             // remove ID from cloned block, to avoid duplicate IDs
@@ -81,6 +79,17 @@ class WPFlexibleCSVImporter {
             // show the new block
             optionsBlock.show();
         }
+
+        function showImageFieldOptions(target) {
+            optionsBlock = jQuery('#imageFieldOptionsBlock').clone();
+
+            // remove ID from cloned block, to avoid duplicate IDs
+            jQuery(optionsBlock).removeAttr('id');
+            // append into place
+            jQuery(target).closest('td').next('td').html(optionsBlock);
+            // show the new block
+            optionsBlock.show();
+        }
  
         function handleFieldChange(target) {
             targetField = jQuery(target);
@@ -92,18 +101,15 @@ class WPFlexibleCSVImporter {
             // hide all other field type options
             hideAllFieldOptions(target);
 
-            // handle a "title" field
             if (chosenFieldType == 'title') {
                 showTitleFieldOptions(target);
-            }
-            // handle a "custom" field
-            if (chosenFieldType == 'custom') {
+            } else if (chosenFieldType == 'custom') {
                 showCustomFieldOptions(target);
+            } else if (chosenFieldType == 'image') {
+                showImageFieldOptions(target);
             }
 
-            // handle a "content" field
-
-            // handle an "image" field
+            // TODO: handle a "content" field
          
         }
 
@@ -127,7 +133,7 @@ class WPFlexibleCSVImporter {
 
           jQuery.each(data.meta.fields, function(index, value) {
               console.log(value);
-              el = '<tr><td>' + value + '</td><td>' + select + '</td><td class=".fieldOptions"><input /></td>';
+              el = '<tr><td>' + value + '</td><td>' + select + '</td><td class=".fieldOptions">&nbsp;</td>';
               jQuery('#fieldMappingTable tbody').append(el)
           });
         }
@@ -184,6 +190,19 @@ class WPFlexibleCSVImporter {
 
             Create new
             <input />
+        </div>
+
+        <div id="imageFieldOptionsBlock" style="display:none;">
+            Use as featured image? <input type="checkbox" />
+
+            Insert in content?
+            <select>
+                <option>No</option>
+                <option>Above content</option>
+                <option>Below content</option>
+            </select>
+
+            Save image locally? <input type="checkbox" />
         </div>
 
         <?php
