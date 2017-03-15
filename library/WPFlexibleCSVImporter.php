@@ -21,6 +21,23 @@ class WPFlexibleCSVImporter {
     }
 
     private function showMainPage() {
+
+        /* get list of all custom fields in use on all posts */
+        $customFieldsList = [];
+        $posts = get_posts(array(
+            'posts_per_page'=>-1
+        ));
+
+        foreach($posts as $post) {
+            $postMeta = get_post_meta($post->ID);
+
+            foreach($postMeta as $key => $value) {
+                // exclude other meta besides custom fields
+                if ( '_' != $key{0} )
+                $customFieldsList[] = $key;
+            }
+        }
+
         ?>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.4/papaparse.min.js"></script>
@@ -33,6 +50,8 @@ class WPFlexibleCSVImporter {
         select += '<option value="content">Content</option>';
         select += '<option value="image">Image</option>';
         select += '</select>';
+
+        var existingCustomFields = <?php echo json_encode($customFieldsList); ?>;
 
         function hideAllFieldOptions(target) {
             // remove all field options
