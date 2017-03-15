@@ -53,17 +53,26 @@ class WPFlexibleCSVImporter {
 
         var existingCustomFields = <?php echo json_encode($customFieldsList); ?>;
 
+
         function hideAllFieldOptions(target) {
             // remove all field options
             jQuery(target).closest('td').next('td').html('');
         }
 
         function showTitleFieldOptions(target) {
-
-            // add title field options
-
             // clone empty title field options set
             optionsBlock = jQuery('#titleFieldOptionsBlock').clone();
+
+            // remove ID from cloned block, to avoid duplicate IDs
+            jQuery(optionsBlock).removeAttr('id');
+            // append into place
+            jQuery(target).closest('td').next('td').html(optionsBlock);
+            // show the new block
+            optionsBlock.show();
+        }
+
+        function showCustomFieldOptions(target) {
+            optionsBlock = jQuery('#customFieldOptionsBlock').clone();
 
             // remove ID from cloned block, to avoid duplicate IDs
             jQuery(optionsBlock).removeAttr('id');
@@ -88,6 +97,9 @@ class WPFlexibleCSVImporter {
                 showTitleFieldOptions(target);
             }
             // handle a "custom" field
+            if (chosenFieldType == 'custom') {
+                showCustomFieldOptions(target);
+            }
 
             // handle a "content" field
 
@@ -126,6 +138,16 @@ class WPFlexibleCSVImporter {
             jQuery(document).on('change','.fieldType',function(event){
               handleFieldChange(event.target);
             });
+
+            // prepare custom fields <select>
+            var $el = jQuery("#customFieldOptionsBlock select");
+            $el.empty(); // remove old options
+            $el.append(jQuery("<option></option>")
+                .attr("value", '').text(''));
+            jQuery.each(existingCustomFields, function(key,value) {
+              $el.append(jQuery("<option></option>")
+                 .attr("value", value).text(value));
+            });
         });
         </script>
         <input type="file" id="csv-file" name="files"/>
@@ -151,6 +173,15 @@ class WPFlexibleCSVImporter {
         <!-- hidden fieldType option sets for cloning -->
         <div id="titleFieldOptionsBlock" style="display:none;">
             Hi, I'm a clone of the titleFieldOptionsBlock
+        </div>
+
+        <div id="customFieldOptionsBlock" style="display:none;">
+            Use existing
+            <select>
+            </select>
+
+            Create new
+            <input />
         </div>
 
         <?php
