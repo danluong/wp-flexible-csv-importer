@@ -172,7 +172,9 @@ class WPFlexibleCSVImporter {
 
         <!-- hidden fieldType option sets for cloning -->
         <div id="titleFieldOptionsBlock" style="display:none;">
-            Hi, I'm a clone of the titleFieldOptionsBlock
+            <input placeholder="prepend text" />
+            <i>{ title }</i>
+            <input placeholder="append text" />
         </div>
 
         <div id="customFieldOptionsBlock" style="display:none;">
