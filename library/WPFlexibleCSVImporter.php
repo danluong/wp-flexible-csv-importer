@@ -138,6 +138,29 @@ class WPFlexibleCSVImporter {
           });
         }
 
+        function doTheImport() {
+            alert('importing');
+
+            // validation
+            // must have title (could add option for faking, but nope)
+
+            // loop through each row in CSV
+
+                // create post
+
+                // set title to field mapped to title + options
+
+                // set content to mapped field if exists + options
+
+                // do something if an image field has been mapped + options
+
+                // finish post creation
+
+                // add post meta (each custom field-mapped field from CSV)
+
+
+        }
+
         function showFieldMappings() {
           jQuery('#csv-file').hide();
           jQuery('#fieldMappings').show();
@@ -155,6 +178,11 @@ class WPFlexibleCSVImporter {
             jQuery(document).on('change','.fieldType',function(event){
               handleFieldChange(event.target);
             });
+
+            jQuery(document).on('click','#doTheImportButton',function(event){
+              doTheImport();
+            });
+
 
             // prepare custom fields <select>
             var $el = jQuery("#customFieldOptionsBlock select");
@@ -184,7 +212,7 @@ class WPFlexibleCSVImporter {
                 </tbody>
             </table>
 
-            <button class="button-primary">Import</button>
+            <button id="doTheImportButton" class="button-primary">Import</button>
         </div>
 
         <!-- hidden fieldType option sets for cloning -->
