@@ -58,8 +58,20 @@ class WPFlexibleCSVImporter {
             // remove all field options
             jQuery(target).closest('td').next('td').html('');
         }
-function showTitleFieldOptions(target) {
+
+        function showTitleFieldOptions(target) {
             optionsBlock = jQuery('#titleFieldOptionsBlock').clone();
+
+            // remove ID from cloned block, to avoid duplicate IDs
+            jQuery(optionsBlock).removeAttr('id');
+            // append into place
+            jQuery(target).closest('td').next('td').html(optionsBlock);
+            // show the new block
+            optionsBlock.show();
+        }
+
+        function showContentFieldOptions(target) {
+            optionsBlock = jQuery('#contentFieldOptionsBlock').clone();
 
             // remove ID from cloned block, to avoid duplicate IDs
             jQuery(optionsBlock).removeAttr('id');
@@ -107,10 +119,9 @@ function showTitleFieldOptions(target) {
                 showCustomFieldOptions(target);
             } else if (chosenFieldType == 'image') {
                 showImageFieldOptions(target);
+            } else if (chosenFieldType == 'content') {
+                showContentFieldOptions(target);
             }
-
-            // TODO: handle a "content" field
-         
         }
 
         function handleFileSelect(evt) {
@@ -180,6 +191,12 @@ function showTitleFieldOptions(target) {
         <div id="titleFieldOptionsBlock" style="display:none;">
             <input placeholder="prepend text" />
             <i>{ title }</i>
+            <input placeholder="append text" />
+        </div>
+
+        <div id="contentFieldOptionsBlock" style="display:none;">
+            <input placeholder="prepend text" />
+            <i>{ content }</i>
             <input placeholder="append text" />
         </div>
 
