@@ -27,17 +27,31 @@ class WPFlexibleCSVImporter {
         <script>
         var data;
         var select = '<select class="fieldType">';
+        select += '<option value="ignore">Ignore</option>';
         select += '<option value="custom">Custom field</option>';
         select += '<option value="title">Title</option>';
         select += '<option value="content">Content</option>';
         select += '<option value="image">Image</option>';
         select += '</select>';
 
-        function showTitleFieldOptions(target) {
+        function hideAllFieldOptions(target) {
             // remove all field options
-            jQuery(target).parent().html(''); 
+            jQuery(target).closest('td').next('td').html('');
+        }
+
+        function showTitleFieldOptions(target) {
 
             // add title field options
+
+            // clone empty title field options set
+            optionsBlock = jQuery('#titleFieldOptionsBlock').clone();
+
+            // remove ID from cloned block, to avoid duplicate IDs
+            jQuery(optionsBlock).removeAttr('id');
+            // append into place
+            jQuery(target).closest('td').next('td').html(optionsBlock);
+            // show the new block
+            optionsBlock.show();
         }
  
         function handleFieldChange(target) {
@@ -47,8 +61,13 @@ class WPFlexibleCSVImporter {
             chosenFieldType = targetField.find(":selected").val();
             console.log(chosenFieldType);
 
-            // handle a "title" field
+            // hide all other field type options
+            hideAllFieldOptions(target);
 
+            // handle a "title" field
+            if (chosenFieldType == 'title') {
+                showTitleFieldOptions(target);
+            }
             // handle a "custom" field
 
             // handle a "content" field
@@ -108,6 +127,11 @@ class WPFlexibleCSVImporter {
             </table>
 
             <button class="button-primary">Import</button>
+        </div>
+
+        <!-- hidden fieldType option sets for cloning -->
+        <div id="titleFieldOptionsBlock" style="display:none;">
+            Hi, I'm a clone of the titleFieldOptionsBlock
         </div>
 
         <?php
