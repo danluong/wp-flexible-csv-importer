@@ -139,13 +139,23 @@ class WPFlexibleCSVImporter {
         }
 
         function doTheImport() {
-            alert('importing');
-
             // validation
             // must have title (could add option for faking, but nope)
 
-            // loop through each row in CSV
+            // TODO: loop through each row in CSV
 
+                data = 'action=create_post';
+                jQuery.ajax({
+                    url: ajaxurl,
+                    data : {
+                        action:'create_post'
+                    },
+                    dataType: 'html',
+                    method: 'POST',
+                    success: function(serverResponse) {
+                        console.log('sent some ajax');
+                    }
+                });
                 // create post
 
                 // set title to field mapped to title + options

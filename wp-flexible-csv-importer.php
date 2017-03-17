@@ -13,6 +13,37 @@ Copyright (c) 2017 Leon Stafford
 
 require_once 'library/WPFlexibleCSVImporter.php';
 
+// this needed to come outside of the main plugin instantiation block
+add_action( 'wp_ajax_create_post', 'create_post' );
+
+function create_post() {
+    error_log('creating post via ajax call');
+
+    // insert the post and set the category
+    $post_id = wp_insert_post(array (
+        'post_type' => 'post',
+        'post_title' => 'bananas',
+        'post_content' => 'content',
+        'post_status' => 'publish',
+    ));
+
+    if ($post_id) {
+        // insert post meta(s)
+        add_post_meta($post_id, 'some_field', 'some value');
+    }
+
+
+    wp_die();
+}
+
+if(has_action('wp_ajax_create_post')) {
+        // action exists 
+
+} else {
+        // action has not been registered
+        error_log('OOPS cant find action AFTER DECLARING IT');
+}      
+
 if ( is_admin() && defined('WP_LOAD_IMPORTERS') ) {
 
 	require_once ABSPATH . 'wp-admin/includes/import.php';
@@ -34,5 +65,6 @@ if ( is_admin() && defined('WP_LOAD_IMPORTERS') ) {
 			'router'
 		)
 	);
+
 
 }
