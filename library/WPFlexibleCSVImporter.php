@@ -42,7 +42,8 @@ class WPFlexibleCSVImporter {
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.4/papaparse.min.js"></script>
         <script>
-        var data;
+        var csvData;
+        var processedRows = 0;
         var select = '<select class="fieldType">';
         select += '<option value="ignore">Ignore</option>';
         select += '<option value="custom">Custom field</option>';
@@ -131,8 +132,8 @@ class WPFlexibleCSVImporter {
             header: true,
             dynamicTyping: true,
             complete: function(results) {
-              data = results;
-              console.log(data);
+              csvData = results;
+              console.log(csvData);
               showFieldMappings();
             }
           });
@@ -142,32 +143,54 @@ class WPFlexibleCSVImporter {
             // validation
             // must have title (could add option for faking, but nope)
 
+            jQuery('#doTheImportButton').hide();
+            jQuery('#progressIndicator').show();
+
+            processCSVData();
+
             // TODO: loop through each row in CSV
 
-                data = 'action=create_post';
-                jQuery.ajax({
-                    url: ajaxurl,
-                    data : {
-                        action:'create_post'
-                    },
-                    dataType: 'html',
-                    method: 'POST',
-                    success: function(serverResponse) {
-                        console.log('sent some ajax');
+            // create post
+
+            // set title to field mapped to title + options
+
+            // set content to mapped field if exists + options
+
+            // do something if an image field has been mapped + options
+
+            // finish post creation
+
+            // add post meta (each custom field-mapped field from CSV)
+
+        }
+
+        function processCSVData() {
+            // process one row, increment processed num, call self on success
+            console.log('processing CSV data...');
+            console.log('processed rows:' + processedRows);
+            console.log('data length:' + csvData.data.length);
+            console.log(processedRows < csvData.data.length);
+
+            data = 'action=create_post';
+            jQuery.ajax({
+                url: ajaxurl,
+                data : {
+                    action:'create_post'
+                },
+                dataType: 'html',
+                method: 'POST',
+                success: function(serverResponse) {
+                    processedRows += 1;
+                    console.log('processed rows' + processedRows);
+                    if (processedRows < csvData.data.length) {
+                        processCSVData();
+                    } else {
+                        console.log('all rows processed');
+                        jQuery('#doTheImportButton').show();
+                        jQuery('#progressIndicator').hide();
                     }
-                });
-                // create post
-
-                // set title to field mapped to title + options
-
-                // set content to mapped field if exists + options
-
-                // do something if an image field has been mapped + options
-
-                // finish post creation
-
-                // add post meta (each custom field-mapped field from CSV)
-
+                }
+            });
 
         }
 
@@ -175,7 +198,7 @@ class WPFlexibleCSVImporter {
           jQuery('#csv-file').hide();
           jQuery('#fieldMappings').show();
 
-          jQuery.each(data.meta.fields, function(index, value) {
+          jQuery.each(csvData.meta.fields, function(index, value) {
               console.log(value);
               el = '<tr><td>' + value + '</td><td>' + select + '</td><td class=".fieldOptions">&nbsp;</td>';
               jQuery('#fieldMappingTable tbody').append(el)
@@ -223,6 +246,7 @@ class WPFlexibleCSVImporter {
             </table>
 
             <button id="doTheImportButton" class="button-primary">Import</button>
+            <img id="progressIndicator" src="<?php echo plugins_url('../images/ellipsis.gif', __FILE__); ?>" style="display:none;" />
         </div>
 
         <!-- hidden fieldType option sets for cloning -->
