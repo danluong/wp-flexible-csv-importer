@@ -1,7 +1,6 @@
 <?php
 
 class WPFlexibleCSVImporter {
-
 	private $action = 'admin.php?import=wp-flexible-csv-importer';
 
 	public function router()
@@ -60,41 +59,8 @@ class WPFlexibleCSVImporter {
             jQuery(target).closest('td').next('td').html('');
         }
 
-        function showTitleFieldOptions(target) {
-            optionsBlock = jQuery('#titleFieldOptionsBlock').clone();
-
-            // remove ID from cloned block, to avoid duplicate IDs
-            jQuery(optionsBlock).removeAttr('id');
-            // append into place
-            jQuery(target).closest('td').next('td').html(optionsBlock);
-            // show the new block
-            optionsBlock.show();
-        }
-
-        function showContentFieldOptions(target) {
-            optionsBlock = jQuery('#contentFieldOptionsBlock').clone();
-
-            // remove ID from cloned block, to avoid duplicate IDs
-            jQuery(optionsBlock).removeAttr('id');
-            // append into place
-            jQuery(target).closest('td').next('td').html(optionsBlock);
-            // show the new block
-            optionsBlock.show();
-        }
-
-        function showCustomFieldOptions(target) {
-            optionsBlock = jQuery('#customFieldOptionsBlock').clone();
-
-            // remove ID from cloned block, to avoid duplicate IDs
-            jQuery(optionsBlock).removeAttr('id');
-            // append into place
-            jQuery(target).closest('td').next('td').html(optionsBlock);
-            // show the new block
-            optionsBlock.show();
-        }
-
-        function showImageFieldOptions(target) {
-            optionsBlock = jQuery('#imageFieldOptionsBlock').clone();
+        function showFieldOptions(target, fieldType) {
+            optionsBlock = jQuery('#' + fieldType + 'FieldOptionsBlock').clone();
 
             // remove ID from cloned block, to avoid duplicate IDs
             jQuery(optionsBlock).removeAttr('id');
@@ -114,15 +80,18 @@ class WPFlexibleCSVImporter {
             // hide all other field type options
             hideAllFieldOptions(target);
 
-            if (chosenFieldType == 'title') {
-                showTitleFieldOptions(target);
-            } else if (chosenFieldType == 'custom') {
-                showCustomFieldOptions(target);
-            } else if (chosenFieldType == 'image') {
-                showImageFieldOptions(target);
-            } else if (chosenFieldType == 'content') {
-                showContentFieldOptions(target);
-            }
+            // TODO: error prevention
+            // can currently only have 1 or 0 image fields
+            // if an image field is set, disable other image options in selects
+
+            // if no image field is set, enable other image fields
+
+            // can only have 1 title field
+            // if a title field is set, disable other title fields
+
+            // if not title field is set, enable other title fields
+
+            showFieldOptions(target, chosenFieldType);
         }
 
         function handleFileSelect(evt) {
@@ -141,27 +110,15 @@ class WPFlexibleCSVImporter {
 
         function doTheImport() {
             // validation
-            // must have title (could add option for faking, but nope)
+            // must have 1 title (could add option for faking, but nope)
+
+            // if no title field mapped:
+
 
             jQuery('#doTheImportButton').hide();
             jQuery('#progressIndicator').show();
 
             processCSVData();
-
-            // TODO: loop through each row in CSV
-
-            // create post
-
-            // set title to field mapped to title + options
-
-            // set content to mapped field if exists + options
-
-            // do something if an image field has been mapped + options
-
-            // finish post creation
-
-            // add post meta (each custom field-mapped field from CSV)
-
         }
 
         function processCSVData() {
