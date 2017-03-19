@@ -171,16 +171,46 @@ class WPFlexibleCSVImporter {
             console.log('data length:' + csvData.data.length);
             console.log(processedRows < csvData.data.length);
 
+            // TODO: handle when none selected
             titleField = jQuery('option:selected[value="title"]').closest('td').prev('td').text();
             contentField = jQuery('option:selected[value="content"]').closest('td').prev('td').text();
+            imageField = jQuery('option:selected[value="image"]').closest('td').prev('td').text();
+            useAsFeaturedImageOption = jQuery('option:selected[value="image"]').closest('td').next('td').find('#useAsFeaturedImage').attr('checked');
+            saveImageLocallyOption = jQuery('option:selected[value="image"]').closest('td').next('td').find('#saveImageLocally').attr('checked');
+
+            imageLocationInPost = jQuery('option:selected[value="image"]').closest('td').next('td').find('#imageLocationInPost option:selected').val()
+
+            // send all image options to server and process there (featured, content location, etc)
+
+            // mandatory fields (TODO: move image to optional)
+            postData = {
+                action: 'create_post',
+                title: csvData.data[processedRows][titleField],
+                content: csvData.data[processedRows][contentField]
+            };
+
+            // optional fields
+            if (imageField !== '') { //TODO: does this handle undefined when no image field selected?
+                postData["image"] = csvData.data[processedRows][imageField] 
+            }
+
+            if (useAsFeaturedImageOption === 'checked') {
+                postData["useAsFeaturedImage"] = 1;
+            }
+
+            if (saveImageLocallyOption === 'checked') {
+                postData["saveImageLocallyOption"] = 1;
+            }
+
+            if (imageLocationInPost === 'above_content') {
+                postData["imageLocationInPost"] = 'above_content';
+            } else if (imageLocationInPost === 'below_content') {
+                postData["imageLocationInPost"] = 'below_content';
+            }
 
             jQuery.ajax({
                 url: ajaxurl,
-                data : {
-                    action: 'create_post',
-                    title: csvData.data[processedRows][titleField],
-                    content: csvData.data[processedRows][contentField]
-                },
+                data : postData,
                 dataType: 'html',
                 method: 'POST',
                 success: function(serverResponse) {
@@ -276,16 +306,16 @@ class WPFlexibleCSVImporter {
         </div>
 
         <div id="imageFieldOptionsBlock" style="display:none;">
-            Use as featured image? <input type="checkbox" />
+            Use as featured image? <input type="checkbox" id="useAsFeaturedImage" />
 
             Insert in content?
-            <select>
-                <option>No</option>
-                <option>Above content</option>
-                <option>Below content</option>
+            <select id="imageLocationInPost">
+                <option value="none">No</option>
+                <option value="above_content">Above content</option>
+                <option value="below_content">Below content</option>
             </select>
 
-            Save image locally? <input type="checkbox" />
+            Save image locally? <input type="checkbox" id="saveImageLocally" />
         </div>
 
         <?php

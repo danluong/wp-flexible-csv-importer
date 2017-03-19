@@ -20,12 +20,20 @@ function create_post() {
     error_log('creating post via ajax call');
 
     // insert the post and set the category
-    $post_id = wp_insert_post(array (
+    // TODO: add post filter, use isset()
+    $postContent = $_POST['content'];
+    $postTitle = $_POST['title'];
+    $image = $_POST['image'];
+    $useAsFeaturedImage = $_POST['useAsFeaturedImage'];
+
+    $postOptions = array (
         'post_type' => 'post',
-        'post_title' => $_POST['title'],
-        'post_content' => $_POST['content'],
+        'post_title' => $postTitle,
+        'post_content' => $postContent,
         'post_status' => 'publish',
-    ));
+    );
+
+    $post_id = wp_insert_post($postOptions);
 
     if ($post_id) {
         // insert post meta(s)
