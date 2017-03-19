@@ -22,8 +22,8 @@ function create_post() {
     // insert the post and set the category
     $post_id = wp_insert_post(array (
         'post_type' => 'post',
-        'post_title' => 'bananas',
-        'post_content' => 'content',
+        'post_title' => $_POST['title'],
+        'post_content' => $_POST['content'],
         'post_status' => 'publish',
     ));
 

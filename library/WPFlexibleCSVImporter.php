@@ -171,11 +171,15 @@ class WPFlexibleCSVImporter {
             console.log('data length:' + csvData.data.length);
             console.log(processedRows < csvData.data.length);
 
-            data = 'action=create_post';
+            titleField = jQuery('option:selected[value="title"]').closest('td').prev('td').text();
+            contentField = jQuery('option:selected[value="content"]').closest('td').prev('td').text();
+
             jQuery.ajax({
                 url: ajaxurl,
                 data : {
-                    action:'create_post'
+                    action: 'create_post',
+                    title: csvData.data[processedRows][titleField],
+                    content: csvData.data[processedRows][contentField]
                 },
                 dataType: 'html',
                 method: 'POST',
