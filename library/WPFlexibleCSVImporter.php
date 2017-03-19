@@ -180,7 +180,7 @@ class WPFlexibleCSVImporter {
 
             imageLocationInPost = jQuery('option:selected[value="image"]').closest('td').next('td').find('#imageLocationInPost option:selected').val()
 
-            // send all image options to server and process there (featured, content location, etc)
+            // process all image options on server (featured, content location, etc)
 
             // mandatory fields (TODO: move image to optional)
             postData = {
@@ -207,6 +207,28 @@ class WPFlexibleCSVImporter {
             } else if (imageLocationInPost === 'below_content') {
                 postData["imageLocationInPost"] = 'below_content';
             }
+
+            // custom fields
+
+            // get all custom fields as array
+            customFieldsForPost = [];
+
+            // for each custom field
+            jQuery.each('option:selected[value="custom"]', function(customfield) {
+                customFieldName = ''; 
+                // send the value same way, whether new or existing
+                // if existing dropdown is not empty, send that as value 
+                customFieldDropDown = 'getdropdownrelativetoelement';
+
+
+                customFieldFreeInput = 'getfieldrelativetoelement';
+
+                customFieldsForPost.push(['fieldname', 'fieldvalue']);
+
+
+            };
+
+            postData["imageLocationInPost"] = customFieldsForPost;
 
             jQuery.ajax({
                 url: ajaxurl,
