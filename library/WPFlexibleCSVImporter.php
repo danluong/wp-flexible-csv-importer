@@ -208,27 +208,30 @@ class WPFlexibleCSVImporter {
                 postData["imageLocationInPost"] = 'below_content';
             }
 
-            // custom fields
-
             // get all custom fields as array
             customFieldsForPost = [];
 
             // for each custom field
-            jQuery.each('option:selected[value="custom"]', function(customfield) {
+            jQuery('option:selected[value="custom"]').each(function(index) {
+                customField = this;
+
                 customFieldName = ''; 
                 // send the value same way, whether new or existing
                 // if existing dropdown is not empty, send that as value 
                 customFieldDropDown = 'getdropdownrelativetoelement';
-
+                
 
                 customFieldFreeInput = 'getfieldrelativetoelement';
+            
+                // get the value for the field from the CSV data after finding out which field it's in
+                csvFieldName = jQuery(customField).closest('td').prev('td').text();
+                customFieldValue = csvData.data[processedRows][csvFieldName] 
 
-                customFieldsForPost.push(['fieldname', 'fieldvalue']);
+                customFieldsForPost.push(['fieldname', customFieldValue]);
 
+            });
 
-            };
-
-            postData["imageLocationInPost"] = customFieldsForPost;
+            postData["customFields"] = customFieldsForPost;
 
             jQuery.ajax({
                 url: ajaxurl,
@@ -320,11 +323,11 @@ class WPFlexibleCSVImporter {
 
         <div id="customFieldOptionsBlock" style="display:none;">
             Use existing
-            <select>
+            <select class="existingCustomField">
             </select>
 
             Create new
-            <input />
+            <input class="newCustomField" />
         </div>
 
         <div id="imageFieldOptionsBlock" style="display:none;">
