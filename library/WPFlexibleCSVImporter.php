@@ -35,6 +35,7 @@ class WPFlexibleCSVImporter {
             }
         }
 
+        $customFieldsList = array_unique($customFieldsList);
         ?>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.4/papaparse.min.js"></script>
