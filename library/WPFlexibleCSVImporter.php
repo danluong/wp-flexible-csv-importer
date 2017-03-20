@@ -3,8 +3,7 @@
 class WPFlexibleCSVImporter {
 	private $action = 'admin.php?import=wp-flexible-csv-importer';
 
-	public function router()
-	{
+	public function router() {
         $this->showHeader();
 
         // perform upload
@@ -20,7 +19,6 @@ class WPFlexibleCSVImporter {
     }
 
     private function showMainPage() {
-
         /* get list of all custom fields in use on all posts */
         $customFieldsList = [];
         $posts = get_posts(array(
@@ -53,9 +51,7 @@ class WPFlexibleCSVImporter {
 
         var existingCustomFields = <?php echo json_encode($customFieldsList); ?>;
 
-
         function hideAllFieldOptions(target) {
-            // remove all field options
             jQuery(target).closest('td').next('td').html('');
         }
 
@@ -73,23 +69,29 @@ class WPFlexibleCSVImporter {
         function handleFieldChange(target) {
             targetField = jQuery(target);
 
-            // get chosen field type
             chosenFieldType = targetField.find(":selected").val();
             console.log(chosenFieldType);
 
             // hide all other field type options
             hideAllFieldOptions(target);
 
-            // TODO: error prevention
-            // can currently only have 1 or 0 image fields
-            // if an image field is set, disable other image options in selects
+            // if an image field is set, disable other image fields
+            if (jQuery('option:selected[value="image"]').length === 1) {
+                jQuery('option[value="image"]').not(':selected').attr('disabled', 'disabled');
+            }
 
-            // if no image field is set, enable other image fields
+            if (jQuery('option:selected[value="image"]').length === 0) {
+                jQuery('option[value="image"]').removeAttr('disabled');
+            }
 
-            // can only have 1 title field
             // if a title field is set, disable other title fields
+            if (jQuery('option:selected[value="title"]').length === 1) {
+                jQuery('option[value="title"]').not(':selected').attr('disabled', 'disabled');
+            }
 
-            // if not title field is set, enable other title fields
+            if (jQuery('option:selected[value="title"]').length === 0) {
+                jQuery('option[value="title"]').removeAttr('disabled');
+            }
 
             showFieldOptions(target, chosenFieldType);
         }
@@ -109,12 +111,6 @@ class WPFlexibleCSVImporter {
         }
 
         function doTheImport() {
-            // validation
-            // must have 1 title (could add option for faking, but nope)
-
-            // if no title field mapped:
-
-
             jQuery('#doTheImportButton').hide();
             jQuery('#progressIndicator').show();
 
@@ -128,7 +124,6 @@ class WPFlexibleCSVImporter {
             console.log('data length:' + csvData.data.length);
             console.log(processedRows < csvData.data.length);
 
-            // TODO: handle when none selected
             titleField = jQuery('option:selected[value="title"]').closest('td').prev('td').text();
             contentField = jQuery('option:selected[value="content"]').closest('td').prev('td').text();
             imageField = jQuery('option:selected[value="image"]').closest('td').prev('td').text();
@@ -137,9 +132,7 @@ class WPFlexibleCSVImporter {
 
             imageLocationInPost = jQuery('option:selected[value="image"]').closest('td').next('td').find('#imageLocationInPost option:selected').val()
 
-            // process all image options on server (featured, content location, etc)
-
-            // mandatory fields (TODO: move image to optional)
+            // mandatory fields
             postData = {
                 action: 'create_post',
                 title: csvData.data[processedRows][titleField],
@@ -177,7 +170,6 @@ class WPFlexibleCSVImporter {
                 // if existing dropdown is not empty, send that as value 
                 customFieldDropDown = 'getdropdownrelativetoelement';
                 
-
                 customFieldFreeInput = 'getfieldrelativetoelement';
             
                 // get the value for the field from the CSV data after finding out which field it's in
@@ -185,7 +177,6 @@ class WPFlexibleCSVImporter {
                 customFieldValue = csvData.data[processedRows][csvFieldName] 
 
                 customFieldsForPost.push(['fieldname', customFieldValue]);
-
             });
 
             postData["customFields"] = customFieldsForPost;
@@ -207,7 +198,6 @@ class WPFlexibleCSVImporter {
                     }
                 }
             });
-
         }
 
         function showFieldMappings() {
@@ -231,7 +221,6 @@ class WPFlexibleCSVImporter {
             jQuery(document).on('click','#doTheImportButton',function(event){
               doTheImport();
             });
-
 
             // prepare custom fields <select>
             var $el = jQuery("#customFieldOptionsBlock select");
