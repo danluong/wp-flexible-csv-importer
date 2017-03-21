@@ -70,6 +70,9 @@ class WPFlexibleCSVImporter {
         function handleFieldChange(target) {
             targetField = jQuery(target);
 
+            titlePrependField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titlePrependField').text();
+            console.log(titlePrependField);
+
             chosenFieldType = targetField.find(":selected").val();
             console.log(chosenFieldType);
 
@@ -92,6 +95,15 @@ class WPFlexibleCSVImporter {
 
             if (jQuery('option:selected[value="title"]').length === 0) {
                 jQuery('option[value="title"]').removeAttr('disabled');
+            }
+
+            // if a content field is set, disable other content fields
+            if (jQuery('option:selected[value="content"]').length === 1) {
+                jQuery('option[value="content"]').not(':selected').attr('disabled', 'disabled');
+            }
+
+            if (jQuery('option:selected[value="content"]').length === 0) {
+                jQuery('option[value="content"]').removeAttr('disabled');
             }
 
             showFieldOptions(target, chosenFieldType);
@@ -126,6 +138,8 @@ class WPFlexibleCSVImporter {
             console.log(processedRows < csvData.data.length);
 
             titleField = jQuery('option:selected[value="title"]').closest('td').prev('td').text();
+            titlePrependField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titlePrependField').text();
+            titleAppendField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titleAppendField').text();
             contentField = jQuery('option:selected[value="content"]').closest('td').prev('td').text();
             imageField = jQuery('option:selected[value="image"]').closest('td').prev('td').text();
             useAsFeaturedImageOption = jQuery('option:selected[value="image"]').closest('td').next('td').find('#useAsFeaturedImage').attr('checked');
@@ -136,7 +150,7 @@ class WPFlexibleCSVImporter {
             // mandatory fields
             postData = {
                 action: 'create_post',
-                title: csvData.data[processedRows][titleField],
+                title: titlePrependField + csvData.data[processedRows][titleField] + titleAppendField,
                 content: csvData.data[processedRows][contentField]
             };
 
@@ -257,15 +271,15 @@ class WPFlexibleCSVImporter {
 
         <!-- hidden fieldType option sets for cloning -->
         <div id="titleFieldOptionsBlock" style="display:none;">
-            <input placeholder="prepend text" />
+            <input class="titlePrependField" placeholder="prepend text" />
             <i>{ title }</i>
-            <input placeholder="append text" />
+            <input class="titleAppendField" placeholder="append text" />
         </div>
 
         <div id="contentFieldOptionsBlock" style="display:none;">
-            <input placeholder="prepend text" />
+            <input class="contentPrependField" placeholder="prepend text" />
             <i>{ content }</i>
-            <input placeholder="append text" />
+            <input class="contentAppendField" placeholder="append text" />
         </div>
 
         <div id="customFieldOptionsBlock" style="display:none;">
