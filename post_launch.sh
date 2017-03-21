@@ -16,7 +16,6 @@ sleep 5
 # get container IP address
 containerIP=$(ip route get 1 | awk '{print $NF;exit}')
 
-echo "You can now access the site at http://$containerIP"
 
 # install default
 wp --allow-root core install --url="$containerIP" --title='WP Flexible CSV Importer' --admin_user=admin --admin_password=admin --admin_email=blah@blah.com --skip-email
@@ -25,6 +24,8 @@ wp --allow-root core install --url="$containerIP" --title='WP Flexible CSV Impor
 
 # activate wp static output plugin
 wp --allow-root plugin activate wp-flexible-csv-importer
+
+echo "You can now access the site at http://$containerIP"
 
 # OPTIONAL: install latest static plugin from WP plugins site vs local src
 #wp --allow-root plugin install static-html-output-plugin --activate
