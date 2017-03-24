@@ -17,8 +17,6 @@ require_once 'library/WPFlexibleCSVImporter.php';
 add_action( 'wp_ajax_create_post', 'create_post' );
 
 function create_post() {
-    error_log('creating post via ajax call');
-
     // insert the post and set the category
     // TODO: add post filter, use isset()
     $postContent = $_POST['content'];
@@ -36,10 +34,13 @@ function create_post() {
     $post_id = wp_insert_post($postOptions);
 
     if ($post_id) {
-        // insert post meta(s)
-        add_post_meta($post_id, 'some_field', 'some value');
+        if(isset($_POST['customFields']) && $_POST['customFields'] != '') {
+            foreach ($_POST['customFields'] as $key => $value) {
+                // insert post meta(s)
+                add_post_meta($post_id, $key, $value);
+            }
+        }
     }
-
 
     wp_die();
 }

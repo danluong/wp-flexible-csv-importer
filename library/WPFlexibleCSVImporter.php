@@ -122,6 +122,7 @@ class WPFlexibleCSVImporter {
         function doTheImport() {
             jQuery('#doTheImportButton').hide();
             jQuery('#progressIndicator').show();
+            jQuery('#progressStats').show();
 
             processCSVData();
         }
@@ -172,7 +173,7 @@ class WPFlexibleCSVImporter {
             }
 
             // get all custom fields as array
-            customFieldsForPost = [];
+            customFieldsForPost = {};
 
             // for each custom field
             jQuery('option:selected[value="custom"]').each(function(index) {
@@ -181,18 +182,26 @@ class WPFlexibleCSVImporter {
                 customFieldName = ''; 
                 // send the value same way, whether new or existing
                 // if existing dropdown is not empty, send that as value 
-                customFieldDropDown = 'getdropdownrelativetoelement';
-                
-                customFieldFreeInput = 'getfieldrelativetoelement';
+                customFieldDropDown = jQuery(this).closest('td').next('td').find('.existingCustomField').val();
+
+                customFieldFreeInput = jQuery(this).closest('td').next('td').find('.newCustomField').val();
+
+                if (customFieldDropDown != '') {
+                    customFieldName = customFieldDropDown;
+                } else if (customFieldFreeInput != '') {
+                    customFieldName = customFieldFreeInput;
+                }
             
                 // get the value for the field from the CSV data after finding out which field it's in
                 csvFieldName = jQuery(customField).closest('td').prev('td').text();
                 customFieldValue = csvData.data[processedRows][csvFieldName] 
 
-                customFieldsForPost.push(['fieldname', customFieldValue]);
+                customFieldsForPost[customFieldName] = customFieldValue;
             });
 
             postData["customFields"] = customFieldsForPost;
+
+            console.log(postData);
 
             jQuery.ajax({
                 url: ajaxurl,
@@ -202,12 +211,14 @@ class WPFlexibleCSVImporter {
                 success: function(serverResponse) {
                     processedRows += 1;
                     console.log('processed rows' + processedRows);
+                    jQuery('#progressStats').html('Processed ' + processedRows + ' of ' +  csvData.data.length + ' (' + Math.floor((processedRows / csvData.data.length) * 100) + '%)')
                     if (processedRows < csvData.data.length) {
                         processCSVData();
                     } else {
                         console.log('all rows processed');
                         jQuery('#doTheImportButton').show();
                         jQuery('#progressIndicator').hide();
+                        jQuery('#progressStats').hide();
                         processedRows += 0;
                     }
                 }
@@ -266,6 +277,7 @@ class WPFlexibleCSVImporter {
 
             <button id="doTheImportButton" class="button-primary">Import</button>
             <img id="progressIndicator" src="<?php echo plugins_url('../images/ellipsis.gif', __FILE__); ?>" style="display:none;" />
+            <div id="progressStats"></div>
         </div>
 
         <!-- hidden fieldType option sets for cloning -->
