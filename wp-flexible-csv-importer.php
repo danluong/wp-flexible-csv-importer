@@ -21,7 +21,6 @@ function create_post() {
     // TODO: add post filter, use isset()
     $postContent = $_POST['content'];
     $postTitle = $_POST['title'];
-    $image = $_POST['image'];
     $useAsFeaturedImage = $_POST['useAsFeaturedImage'];
 
     $postOptions = array (
@@ -41,6 +40,51 @@ function create_post() {
             }
         }
     }
+
+    // handle singular image import
+    if(isset($_POST['image']) && $_POST['image'] != '' && filter_var($_POST['image'], FILTER_VALIDATE_URL)) {
+        // fetch image into uploads folder
+        $imageUrl = strtok($_POST['image'], '?');
+
+        $imageExtension = pathinfo($imageUrl)['extension'];
+
+        $uploads = wp_upload_dir();
+
+        #$uploadPath = $uploads['baseurl'] . '/imported_image_' . $post_id . '_' . mt_rand(100000,999999) . '.' . $imageExtension;
+        $uploadPath = ABSPATH . 'wp-content/uploads/imported_image_' . $post_id . '_' . mt_rand(100000,999999) . '.' . $imageExtension;
+
+        $image = file_get_contents($imageUrl);
+        file_put_contents($uploadPath, $image);
+
+        // Check the type of file. We'll use this as the 'post_mime_type'.
+        $filetype = wp_check_filetype( basename( $uploadPath ), null );
+
+        // Get the path to the upload directory.
+        $wp_upload_dir = wp_upload_dir();
+
+        // Prepare an array of post data for the attachment.
+        $attachment = array(
+            'guid'           => $wp_upload_dir['url'] . '/' . basename( $uploadPath ), 
+            'post_mime_type' => $filetype['type'],
+            'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $uploadPath ) ),
+            'post_content'   => '',
+            'post_status'    => 'inherit'
+        );
+
+        // Insert the attachment.
+        $attach_id = wp_insert_attachment( $attachment, $uploadPath, $post_id );
+
+        // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+        // Generate the metadata for the attachment, and update the database record.
+        $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+        wp_update_attachment_metadata( $attach_id, $attach_data );
+
+        set_post_thumbnail( $post_id, $attach_id );
+    }
+
+
 
     wp_die();
 }
