@@ -70,11 +70,7 @@ class WPFlexibleCSVImporter {
         function handleFieldChange(target) {
             targetField = jQuery(target);
 
-            titlePrependField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titlePrependField').text();
-            console.log(titlePrependField);
-
             chosenFieldType = targetField.find(":selected").val();
-            console.log(chosenFieldType);
 
             // hide all other field type options
             hideAllFieldOptions(target);
@@ -138,9 +134,11 @@ class WPFlexibleCSVImporter {
             console.log(processedRows < csvData.data.length);
 
             titleField = jQuery('option:selected[value="title"]').closest('td').prev('td').text();
-            titlePrependField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titlePrependField').text();
-            titleAppendField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titleAppendField').text();
+            titlePrependField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titlePrependField').val();
+            titleAppendField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titleAppendField').val();
             contentField = jQuery('option:selected[value="content"]').closest('td').prev('td').text();
+            contentPrependField = jQuery('option:selected[value="content"]').closest('td').next('td').find('.contentPrependField').val();
+            contentAppendField = jQuery('option:selected[value="content"]').closest('td').next('td').find('.contentAppendField').val();
             imageField = jQuery('option:selected[value="image"]').closest('td').prev('td').text();
             useAsFeaturedImageOption = jQuery('option:selected[value="image"]').closest('td').next('td').find('#useAsFeaturedImage').attr('checked');
             saveImageLocallyOption = jQuery('option:selected[value="image"]').closest('td').next('td').find('#saveImageLocally').attr('checked');
@@ -151,7 +149,7 @@ class WPFlexibleCSVImporter {
             postData = {
                 action: 'create_post',
                 title: titlePrependField + csvData.data[processedRows][titleField] + titleAppendField,
-                content: csvData.data[processedRows][contentField]
+                content: contentPrependField + csvData.data[processedRows][contentField] + contentAppendField
             };
 
             // optional fields
@@ -210,6 +208,7 @@ class WPFlexibleCSVImporter {
                         console.log('all rows processed');
                         jQuery('#doTheImportButton').show();
                         jQuery('#progressIndicator').hide();
+                        processedRows += 0;
                     }
                 }
             });
