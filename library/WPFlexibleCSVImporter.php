@@ -119,6 +119,7 @@ class WPFlexibleCSVImporter {
         }
 
         function doTheImport() {
+            processedRows = 0;
             // validation
             titleField = jQuery('option:selected[value="title"]');
             contentField = jQuery('option:selected[value="content"]');
