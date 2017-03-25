@@ -113,7 +113,6 @@ class WPFlexibleCSVImporter {
             dynamicTyping: true,
             complete: function(results) {
               csvData = results;
-              console.log(csvData);
               showFieldMappings();
             }
           });
@@ -137,11 +136,6 @@ class WPFlexibleCSVImporter {
 
         function processCSVData() {
             // process one row, increment processed num, call self on success
-            console.log('processing CSV data...');
-            console.log('processed rows:' + processedRows);
-            console.log('data length:' + csvData.data.length);
-            console.log(processedRows < csvData.data.length);
-
             titleField = jQuery('option:selected[value="title"]').closest('td').prev('td').text();
             titlePrependField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titlePrependField').val();
             titleAppendField = jQuery('option:selected[value="title"]').closest('td').next('td').find('.titleAppendField').val();
@@ -205,28 +199,30 @@ class WPFlexibleCSVImporter {
 
             postData["customFields"] = customFieldsForPost;
 
-            console.log(postData);
-
-            jQuery.ajax({
-                url: ajaxurl,
-                data : postData,
-                dataType: 'html',
-                method: 'POST',
-                success: function(serverResponse) {
-                    processedRows += 1;
-                    console.log('processed rows' + processedRows);
-                    jQuery('#progressStats').html('Processed ' + processedRows + ' of ' +  csvData.data.length + ' (' + Math.floor((processedRows / csvData.data.length) * 100) + '%)')
-                    if (processedRows < csvData.data.length) {
-                        processCSVData();
-                    } else {
-                        console.log('all rows processed');
-                        jQuery('#doTheImportButton').show();
-                        jQuery('#progressIndicator').hide();
-                        jQuery('#progressStats').hide();
-                        processedRows += 0;
+            // don't create empty posts
+            if (postData['title'] == '') {
+                // skip posting, just increment processedRows
+            } else {
+                jQuery.ajax({
+                    url: ajaxurl,
+                    data : postData,
+                    dataType: 'html',
+                    method: 'POST',
+                    success: function(serverResponse) {
+                        if (processedRows < csvData.data.length) {
+                            processCSVData();
+                        } else {
+                            jQuery('#doTheImportButton').show();
+                            jQuery('#progressIndicator').hide();
+                            jQuery('#progressStats').hide();
+                            processedRows += 0;
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            processedRows += 1;
+            jQuery('#progressStats').html('Processed ' + processedRows + ' of ' +  csvData.data.length + ' (' + Math.floor((processedRows / csvData.data.length) * 100) + '%)')
         }
 
         function showFieldMappings() {
@@ -235,7 +231,6 @@ class WPFlexibleCSVImporter {
           jQuery('#fieldMappings').show();
 
           jQuery.each(csvData.meta.fields, function(index, value) {
-              console.log(value);
               el = '<tr><td>' + value + '</td><td>' + select + '</td><td class=".fieldOptions">&nbsp;</td>';
               jQuery('#fieldMappingTable tbody').append(el)
           });
