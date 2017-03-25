@@ -5,6 +5,8 @@
 **Requires at least:** 3.2  
 **Tested up to:** 4.7.3  
 **Stable tag:** 0.1  
+**License:** Unlicense  
+**License URI:** http://unlicense.org  
 
 Allows you to import any CSV into WordPress to create posts and custom fields. No need to fiddle with your CSV outside of WordPress!
 
