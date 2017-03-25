@@ -151,7 +151,7 @@ class WPFlexibleCSVImporter {
 
             // mandatory fields
             postData = {
-                action: 'create_post',
+                action: 'wfci_create_post',
                 title: titlePrependField + csvData.data[processedRows][titleField] + titleAppendField,
                 content: contentPrependField + csvData.data[processedRows][contentField] + contentAppendField
             };
