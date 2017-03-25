@@ -162,10 +162,6 @@ class WPFlexibleCSVImporter {
                 postData["useAsFeaturedImage"] = 1;
             }
 
-            if (saveImageLocallyOption === 'checked') {
-                postData["saveImageLocallyOption"] = 1;
-            }
-
             if (imageLocationInPost === 'above_content') {
                 postData["imageLocationInPost"] = 'above_content';
             } else if (imageLocationInPost === 'below_content') {
@@ -311,8 +307,6 @@ class WPFlexibleCSVImporter {
                 <option value="above_content">Above content</option>
                 <option value="below_content">Below content</option>
             </select>
-
-            Save image locally? <input type="checkbox" id="saveImageLocally" />
         </div>
 
         <?php

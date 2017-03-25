@@ -43,48 +43,66 @@ function create_post() {
 
     // handle singular image import
     if(isset($_POST['image']) && $_POST['image'] != '' && filter_var($_POST['image'], FILTER_VALIDATE_URL)) {
-        // fetch image into uploads folder
         $imageUrl = strtok($_POST['image'], '?');
 
-        $imageExtension = pathinfo($imageUrl)['extension'];
+        // magic sideload image returns an HTML image, not an ID
+        $media = media_sideload_image($imageUrl, $post_id);
 
-        $uploads = wp_upload_dir();
+        // therefore we must find it so we can set it as featured ID
+        if(!empty($media) && !is_wp_error($media)){
+            $args = array(
+                'post_type' => 'attachment',
+                'posts_per_page' => -1,
+                'post_status' => 'any',
+                'post_parent' => $post_id
+            );
 
-        #$uploadPath = $uploads['baseurl'] . '/imported_image_' . $post_id . '_' . mt_rand(100000,999999) . '.' . $imageExtension;
-        $uploadPath = ABSPATH . 'wp-content/uploads/imported_image_' . $post_id . '_' . mt_rand(100000,999999) . '.' . $imageExtension;
+            // reference new image to set as featured
+            $attachments = get_posts($args);
 
-        $image = file_get_contents($imageUrl);
-        file_put_contents($uploadPath, $image);
+            if(isset($attachments) && is_array($attachments)){
+                foreach($attachments as $attachment){
+                    // grab source of full size images (so no 300x150 nonsense in path)
+                    $image = wp_get_attachment_image_src($attachment->ID, 'full');
+                    // determine if in the $media image we created, the string of the URL exists
+                    if(strpos($media, $image[0]) !== false){
+                        if (isset($_POST['useAsFeaturedImage']) && $_POST['useAsFeaturedImage'] != '') {
+                            set_post_thumbnail($post_id, $attachment->ID);
+                        }
 
-        // Check the type of file. We'll use this as the 'post_mime_type'.
-        $filetype = wp_check_filetype( basename( $uploadPath ), null );
+                        if (isset($_POST['imageLocationInPost']) && $_POST['useAsFeaturedImage'] != '') {
+                            // get original post content to mix with image
+                            $originalPost = get_post($post_id);
+                            $originalContent = $originalPost->post_content;
+                            $my_post = null;
+                            if ($_POST['imageLocationInPost'] == 'above_content') {
+                                $my_post = array(
+                                    'ID'           => $post_id,
+                                    'post_content' => $media . $originalContent,
+                                );
+                            } else if ($_POST['imageLocationInPost'] == 'below_content') {
+                                $my_post = array(
+                                    'ID'           => $post_id,
+                                    'post_content' => $originalContent . $media,
+                                );
+                            }
+                            // do the image/post mix
+                            wp_update_post($my_post);
+                        }
 
-        // Get the path to the upload directory.
-        $wp_upload_dir = wp_upload_dir();
 
-        // Prepare an array of post data for the attachment.
-        $attachment = array(
-            'guid'           => $wp_upload_dir['url'] . '/' . basename( $uploadPath ), 
-            'post_mime_type' => $filetype['type'],
-            'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $uploadPath ) ),
-            'post_content'   => '',
-            'post_status'    => 'inherit'
-        );
+                        // only want one image
+                        break;
+                    }
+                }
+            }
+        }
 
-        // Insert the attachment.
-        $attach_id = wp_insert_attachment( $attachment, $uploadPath, $post_id );
-
-        // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
-        require_once( ABSPATH . 'wp-admin/includes/image.php' );
-
-        // Generate the metadata for the attachment, and update the database record.
-        $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
-        wp_update_attachment_metadata( $attach_id, $attach_data );
-
-        set_post_thumbnail( $post_id, $attach_id );
     }
 
+    // set featured image
 
+    // if set above/below content set, do so
 
     wp_die();
 }
