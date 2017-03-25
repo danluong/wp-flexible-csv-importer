@@ -14,9 +14,9 @@ Copyright (c) 2017 Leon Stafford
 require_once 'library/WPFlexibleCSVImporter.php';
 
 // this needed to come outside of the main plugin instantiation block
-add_action( 'wp_ajax_create_post', 'create_post' );
+add_action( 'wp_ajax_wfci_create_post', 'wfci_create_post' );
 
-function create_post() {
+function wfci_create_post() {
     // insert the post and set the category
     // TODO: add post filter, use isset()
     $postContent = $_POST['content'];
@@ -101,7 +101,7 @@ function create_post() {
     wp_die();
 }
 
-if(has_action('wp_ajax_create_post')) {
+if(has_action('wp_ajax_wfci_create_post')) {
         // action exists 
 
 } else {
