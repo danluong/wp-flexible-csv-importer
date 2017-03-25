@@ -90,19 +90,13 @@ function create_post() {
                             wp_update_post($my_post);
                         }
 
-
                         // only want one image
                         break;
                     }
                 }
             }
         }
-
     }
-
-    // set featured image
-
-    // if set above/below content set, do so
 
     wp_die();
 }

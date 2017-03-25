@@ -120,11 +120,19 @@ class WPFlexibleCSVImporter {
         }
 
         function doTheImport() {
-            jQuery('#doTheImportButton').hide();
-            jQuery('#progressIndicator').show();
-            jQuery('#progressStats').show();
+            // validation
+            titleField = jQuery('option:selected[value="title"]');
+            contentField = jQuery('option:selected[value="content"]');
 
-            processCSVData();
+            if (titleField.length == 0 || contentField.length == 0) {
+                alert('Please define at least a Title and Content field');
+            } else {
+                jQuery('#doTheImportButton').hide();
+                jQuery('#progressIndicator').show();
+                jQuery('#progressStats').show();
+
+                processCSVData();
+            }
         }
 
         function processCSVData() {
@@ -223,6 +231,7 @@ class WPFlexibleCSVImporter {
 
         function showFieldMappings() {
           jQuery('#csv-file').hide();
+          jQuery('#csvDescription').hide();
           jQuery('#fieldMappings').show();
 
           jQuery.each(csvData.meta.fields, function(index, value) {
@@ -255,10 +264,13 @@ class WPFlexibleCSVImporter {
         });
         </script>
         <input type="file" id="csv-file" name="files"/>
+
+        <p id="csvDescription">Please choose a CSV file with a header row defined (first row contains name of each field in CSV).</p>
         
         <div id ="fieldMappings" style="display:none;">
             <h2 id="fieldMappingsTitle">Field mappings</h2>
 
+            <p>Here, you will see your CSV's field names. Please map them to the appropriate WordPress post elements and click on the Import button to start creating the posts.</p>
             <table id="fieldMappingTable">
                 <thead>
                     <tr>
