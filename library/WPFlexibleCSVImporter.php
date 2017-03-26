@@ -14,11 +14,15 @@ class WPFlexibleCSVImporter {
         }
 	}
 
+    private function showHeader() {
+        echo '<h1>WP Flexible CSV Importer</h1>';
+    }
+
     private function getAction() {
         return $this->action;
     }
 
-    private function showMainPage() {
+    private function getExistingCustomFields() {
         /* get list of all custom fields in use on all posts */
         $customFieldsList = [];
         $posts = get_posts(array(
@@ -35,7 +39,11 @@ class WPFlexibleCSVImporter {
             }
         }
 
-        $customFieldsList = array_unique($customFieldsList);
+        return array_unique($customFieldsList);
+    }
+
+    private function showMainPage() {
+        // TODO: implement templating engine
         ?>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.4/papaparse.min.js"></script>
@@ -50,7 +58,7 @@ class WPFlexibleCSVImporter {
         select += '<option value="image">Image</option>';
         select += '</select>';
 
-        var existingCustomFields = <?php echo json_encode($customFieldsList); ?>;
+        var existingCustomFields = <?php echo json_encode($this->getExistingCustomFields()); ?>;
 
         function hideAllFieldOptions(target) {
             jQuery(target).closest('td').next('td').html('');
@@ -203,6 +211,7 @@ class WPFlexibleCSVImporter {
             // don't create empty posts
             if (postData['title'] == '') {
                 // skip posting, just increment processedRows
+                // TODO: still creating an empty row. add smarts where if row fields != length of header fields, don't import/mark as error row
             } else {
                 jQuery.ajax({
                     url: ajaxurl,
@@ -317,12 +326,6 @@ class WPFlexibleCSVImporter {
             </select>
         </div>
 
-        <?php
-    }
-
-    private function showHeader() {
-        ?>
-        <h1>WP Flexible CSV Importer</h1>
         <?php
     }
 }
