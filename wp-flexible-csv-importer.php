@@ -90,9 +90,8 @@ function wfci_create_post() {
                         $image = wp_get_attachment_image_src($attachment->ID, 'full');
                         // detect our newly attached image
                         if(strpos($imageWithMarkup, $image[0]) !== false){
-                            if ($useAsFeaturedImage != '') {
+                            if ($useAsFeaturedImage != '')
                                 set_post_thumbnail($post_id, $attachment->ID);
-                            }
 
                             if ($imageLocationInPost != '') {
                                 $originalPost = get_post($post_id);
