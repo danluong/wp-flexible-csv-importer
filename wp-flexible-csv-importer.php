@@ -27,7 +27,7 @@ function wfci_create_post() {
     
     // remove html, multiline, trim spaces, mustn't be empty
     $postTitle = sanitize_text_field(filter_input(INPUT_POST, 'title'));
-    if ($postTitle == '') 
+    if ($postTitle == '')
         $errors->add('empty', 'Post title must not be empty');
 
     //should be true if explicitly 1. cast to int
@@ -53,6 +53,13 @@ function wfci_create_post() {
         'post_content' => $postContent,
         'post_status' => 'publish',
     );
+
+    if (empty($postTitle)) {
+        error_log('no post title');
+        $errors->add('failed', 'No post title', $postOptions);
+        echo 'FAILURE';
+        wp_die(); 
+    }
 
     $post_id = wp_insert_post($postOptions);
 

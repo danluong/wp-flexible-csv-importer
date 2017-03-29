@@ -217,10 +217,13 @@ class WPFlexibleCSVImporter {
                 method: 'POST',
                 success: function(serverResponse) {
                     if (processedRows < totalDataRows) {
-                        console.log('more to process!');
+                        if (serverResponse == 'FAILURE') {
+                            console.log(serverResponse);
+                            console.log(postData);
+                        }
+
                         processCSVData();
                     } else {
-                        console.log('no more to process');
                         jQuery('#doTheImportButton').show();
                         jQuery('#progressIndicator').hide();
                         jQuery('#progressStats').hide();
