@@ -43,7 +43,7 @@ function wfci_create_post() {
     $postImage = filter_input(INPUT_POST, 'image', FILTER_VALIDATE_URL);
 
     // should be string of either 'above_content' or 'below_content'
-    $imageLocationInPost = (string) filter_input(INPUT_POST, 'image');
+    $imageLocationInPost = (string) filter_input(INPUT_POST, 'imageLocationInPost');
     if (!in_array($imageLocationInPost, array('above_content', 'below_content')))
         $imageLocationInPost = false;
 

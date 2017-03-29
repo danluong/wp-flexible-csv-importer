@@ -165,7 +165,7 @@ class WPFlexibleCSVImporter {
             };
 
             // optional fields
-            if (imageField !== '') { //TODO: does this handle undefined when no image field selected?
+            if (imageField !== '') {
                 postData["image"] = csvData.data[processedRows][imageField] 
             }
 
@@ -208,31 +208,32 @@ class WPFlexibleCSVImporter {
 
             postData["customFields"] = customFieldsForPost;
 
-            // don't create empty posts
-            if (postData['title'] == '') {
-                // skip posting, just increment processedRows
-                // TODO: still creating an empty row. add smarts where if row fields != length of header fields, don't import/mark as error row
-            } else {
-                jQuery.ajax({
-                    url: ajaxurl,
-                    data : postData,
-                    dataType: 'html',
-                    method: 'POST',
-                    success: function(serverResponse) {
-                        if (processedRows < csvData.data.length) {
-                            processCSVData();
-                        } else {
-                            jQuery('#doTheImportButton').show();
-                            jQuery('#progressIndicator').hide();
-                            jQuery('#progressStats').hide();
-                            processedRows += 0;
-                        }
+            totalDataRows = csvData.data.length - 1;
+
+            jQuery.ajax({
+                url: ajaxurl,
+                data : postData,
+                dataType: 'html',
+                method: 'POST',
+                success: function(serverResponse) {
+                    if (processedRows < totalDataRows) {
+                        console.log('more to process!');
+                        processCSVData();
+                    } else {
+                        console.log('no more to process');
+                        jQuery('#doTheImportButton').show();
+                        jQuery('#progressIndicator').hide();
+                        jQuery('#progressStats').hide();
+                        processedRows = 0;
                     }
-                });
-            }
+                },
+                error: function(serverResponse) {
+                    console.log(serverResponse);
+                }
+            });
 
             processedRows += 1;
-            jQuery('#progressStats').html('Processed ' + processedRows + ' of ' +  csvData.data.length + ' (' + Math.floor((processedRows / csvData.data.length) * 100) + '%)')
+            jQuery('#progressStats').html('Processed ' + processedRows + ' of ' +  totalDataRows + ' (' + Math.floor((processedRows / totalDataRows) * 100) + '%)')
         }
 
         function showFieldMappings() {
