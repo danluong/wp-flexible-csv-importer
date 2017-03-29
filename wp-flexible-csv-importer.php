@@ -18,12 +18,12 @@ add_action( 'wp_ajax_wfci_create_post', 'wfci_create_post' );
 function wfci_create_post() {
     // TODO: does filter_input() negate need for isset() ?
     $postContent = filter_input(INPUT_POST, 'content');
-    $postTitle = filter_input(INPUT_POST, 'postTitle');
+    $postTitle = filter_input(INPUT_POST, 'title');
     $useAsFeaturedImage = filter_input(INPUT_POST, 'useAsFeaturedImage');
     $customFields = filter_input(INPUT_POST, 'customfields');
     // TODO: this OK or use filter_var() ?
     $postImage = filter_input(INPUT_POST, 'image', FILTER_VALIDATE_URL);
-    $imageLocationInPost =  = filter_input(INPUT_POST, 'image');
+    $imageLocationInPost = filter_input(INPUT_POST, 'image');
 
     $postOptions = array (
         'post_type' => 'post',
