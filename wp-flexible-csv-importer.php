@@ -35,8 +35,8 @@ function wfci_create_post() {
     $useAsFeaturedImage = ($useAsFeaturedImage === 1 ? true : false);  
 
     // should be array, not empty 
-    $customFields = filter_input(INPUT_POST, 'customfields');
-    if ((!is_array($customFields) || empty($customFieldsi)))
+    $customFields = $_POST['customFields'];
+    if ((!is_array($customFields) || empty($customFields)))
         $customFields = false; 
 
     // should be valid url
@@ -55,7 +55,6 @@ function wfci_create_post() {
     );
 
     if (empty($postTitle)) {
-        error_log('no post title');
         $errors->add('failed', 'No post title', $postOptions);
         echo 'FAILURE';
         wp_die(); 
@@ -71,7 +70,7 @@ function wfci_create_post() {
                 $key = sanitize_text_field($key);
 
                 // allow html, empty, multiline
-                $value = htmlspecialchars($value);
+                $value = wp_kses_post($value);
 
                 add_post_meta($post_id, $key, $value);
             }
